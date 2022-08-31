@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-lightBg dark:bg-darkBg !scrollbar-thin !scrollbar-thumb-btn hover:scrollbar-thumb-btnHov;
+  }
+}
