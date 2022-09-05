@@ -1,15 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { locations } from "../../utils/locations";
-
+import { useSession } from "next-auth/react";
 import { BsMoonFill, BsSunFill } from "react-icons/bs";
-import { FaSearch, FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { useTheme } from "next-themes";
+import UserModal from "../modals/UserModal";
 
 type HeaderProps = {};
 
 const Header: React.FC<HeaderProps> = () => {
+  const { data: session } = useSession();
   const [scroll, setScroll] = useState<boolean>(false);
   const handleScroll = () => {
     window.scrollY > 0 ? setScroll(true) : setScroll(false);
@@ -39,6 +40,8 @@ const Header: React.FC<HeaderProps> = () => {
     }
   };
 
+  const [openUserModal, setOpenUserModal] = useState<boolean>(false);
+
   return (
     <header
       className={`${
@@ -52,9 +55,34 @@ const Header: React.FC<HeaderProps> = () => {
       </Link>
 
       <div className="flex items-center justify-center space-x-4">
-        <FaUser className="text-3xl  text-btn opacity-70 hover:opacity-100 cursor-pointer" />
+        {session ? (
+          <div
+            onClick={() => setOpenUserModal((prev) => !prev)}
+            className="cursor-pointer flex items-center justify-center space-x-2 h-8 min-w-[3rem] bg-gray-300 p-2 rounded-lg"
+          >
+            <div className="relative w-6 h-6 rounded-full">
+              <Image
+                src={session.user?.image!}
+                layout="fill"
+                objectFit="cover"
+                alt="User Picture"
+                className="rounded-full"
+              />
+            </div>
+            <span className="text-sm text-gray-500 font-bold">
+              {session.user?.name}
+            </span>
+          </div>
+        ) : (
+          <FaUser
+            onClick={() => setOpenUserModal((prev) => !prev)}
+            className="text-3xl  text-btn opacity-70 hover:opacity-100 cursor-pointer"
+          />
+        )}
         {toggleTheme()}
       </div>
+
+      {openUserModal && <UserModal />}
     </header>
   );
 };
