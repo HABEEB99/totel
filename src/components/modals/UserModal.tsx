@@ -1,27 +1,39 @@
 import React from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { GoogleLogin, googleLogout } from "@react-oauth/google";
+import { useAuthStore } from "../../store/authStore";
+import { createOrGetUser } from "../../utils/createOrGetUser";
 
-type UserModalProps = {};
+type UserModalProps = {
+  setOpenUserModal: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const UserModal: React.FC<UserModalProps> = () => {
-  const { data: session } = useSession();
+const UserModal: React.FC<UserModalProps> = ({ setOpenUserModal }) => {
+  const { user, addUser, removeUser } = useAuthStore();
+
+  const handleLogout = () => {
+    googleLogout();
+    removeUser();
+    setOpenUserModal((prev) => !prev);
+  };
 
   return (
     <div className="w-[15rem] rounded-md p-3 flex items-center justify-center min-h-[5rem] bg-modal absolute top-[12vh] right-3 md:right-12 lg:right-36">
-      {session ? (
+      {user ? (
         <button
-          onClick={() => signOut()}
+          onClick={handleLogout}
           className="opacity-70 hover:opacity-100 bg-red-600 w-full h-10 rounded-full text-white text-xl font-bold"
         >
           Sign out
         </button>
       ) : (
-        <button
-          onClick={() => signIn()}
-          className="opacity-70 hover:opacity-100 bg-gradient-to-r from-btn to-btnHov w-full h-10 rounded-full text-white text-xl font-bold"
-        >
-          Login
-        </button>
+        <div onClick={() => setOpenUserModal(false)}>
+          <GoogleLogin
+            onSuccess={(response) => {
+              createOrGetUser(response, addUser);
+            }}
+            onError={() => console.log("An Error occured")}
+          />
+        </div>
       )}
     </div>
   );

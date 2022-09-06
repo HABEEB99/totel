@@ -1,16 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { BsMoonFill, BsSunFill } from "react-icons/bs";
 import { FaUser } from "react-icons/fa";
 import { useTheme } from "next-themes";
 import UserModal from "../modals/UserModal";
+import { useAuthStore } from "../../store/authStore";
 
 type HeaderProps = {};
 
 const Header: React.FC<HeaderProps> = () => {
-  const { data: session } = useSession();
+  const { user, addUser, removeUser } = useAuthStore();
   const [scroll, setScroll] = useState<boolean>(false);
   const handleScroll = () => {
     window.scrollY > 0 ? setScroll(true) : setScroll(false);
@@ -55,22 +55,22 @@ const Header: React.FC<HeaderProps> = () => {
       </Link>
 
       <div className="flex items-center justify-center space-x-4">
-        {session ? (
+        {user ? (
           <div
             onClick={() => setOpenUserModal((prev) => !prev)}
-            className="cursor-pointer flex items-center justify-center space-x-2 h-8 min-w-[3rem] bg-gray-300 p-2 rounded-lg"
+            className="cursor-pointer flex items-center justify-center space-x-2 h-8 min-w-[3rem] opacity-80 hover:opacity-100 bg-gray-300 p-2 rounded-lg"
           >
             <div className="relative w-6 h-6 rounded-full">
               <Image
-                src={session.user?.image!}
+                src={user?.picture!}
                 layout="fill"
                 objectFit="cover"
                 alt="User Picture"
                 className="rounded-full"
               />
             </div>
-            <span className="text-sm text-gray-500 font-bold">
-              {session.user?.name}
+            <span className="text-sm text-green-600 font-bold">
+              {user?.userName}
             </span>
           </div>
         ) : (
@@ -82,7 +82,7 @@ const Header: React.FC<HeaderProps> = () => {
         {toggleTheme()}
       </div>
 
-      {openUserModal && <UserModal />}
+      {openUserModal && <UserModal setOpenUserModal={setOpenUserModal} />}
     </header>
   );
 };
