@@ -1,4 +1,5 @@
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { BsMoonFill, BsSunFill } from "react-icons/bs";
@@ -49,7 +50,7 @@ const Header: React.FC<HeaderProps> = () => {
       } fixed top-0 z-20 w-screen h-[10vh] px-3 md:px-12 space-x-6 lg:px-36 flex items-center justify-between`}
     >
       <Link href="/" passHref>
-        <div className="w-20 h-8 relative">
+        <div className="w-20 h-8 relative cursor-pointer">
           <Image src="/logo.png" layout="fill" objectFit="contain" />
         </div>
       </Link>
@@ -58,7 +59,7 @@ const Header: React.FC<HeaderProps> = () => {
         {user ? (
           <div
             onClick={() => setOpenUserModal((prev) => !prev)}
-            className="cursor-pointer flex items-center justify-center space-x-2 h-8 min-w-[3rem] opacity-80 hover:opacity-100 bg-gray-300 p-2 rounded-lg"
+            className="cursor-pointer flex items-center justify-center space-x-2 h-8 min-w-[3rem] opacity-80 hover:opacity-100 bg-gray-400 p-2 rounded-lg"
           >
             <div className="relative w-6 h-6 rounded-full">
               <Image
@@ -69,7 +70,7 @@ const Header: React.FC<HeaderProps> = () => {
                 className="rounded-full"
               />
             </div>
-            <span className="text-sm text-green-600 font-bold">
+            <span className="text-sm text-green-200 font-bold">
               {user?.userName}
             </span>
           </div>
@@ -86,4 +87,5 @@ const Header: React.FC<HeaderProps> = () => {
     </header>
   );
 };
-export default Header;
+
+export default dynamic(() => Promise.resolve(Header), { ssr: false });
